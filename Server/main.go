@@ -1,6 +1,7 @@
 package main
 
 import (
+	messagequeue "MessageQueue"
 	"fmt"
 	"net/http"
 	"golang.org/x/net/websocket"
@@ -18,7 +19,12 @@ func home(w http.ResponseWriter, r *http.Request){
 
 
 func main (){
+	ChatRooom.ReceiveMessage(messagequeue.Message{RawText: "M1"})
+	ChatRooom.ReceiveMessage(messagequeue.Message{RawText: "M2"})
 	http.HandleFunc("/", home)
+	staticServer := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", 
+		http.StripPrefix("/static/", staticServer))
 	http.Handle("/ws", websocket.Handler(ChatRooom.connect))
 	http.ListenAndServe(":8000", nil)
 }

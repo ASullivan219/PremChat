@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Hello, world!</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="" />
-</head>
-<body>
-  <h1>Hello, world!</h1>
-</body>
+  <head>
+    <script src="/static/htmx.min.js"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+    <meta charset="UTF-8" />
+    <title>Hello, world!</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+  </head>
+  <body>
+    <h1>Hello, world!</h1>
+    <div hx-ext="ws" ws-connect="/ws" hx-trigger="click">
+      Join
+      <div id="ws"></div>
+      <form id-"form" ws-send>
+        <input name='chatMessage'>
+      </form>
+    </div>
+  </body>
 </html>
