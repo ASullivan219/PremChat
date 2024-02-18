@@ -56,10 +56,13 @@ func (cr * ChatRoom) sendAllMessages(ws *websocket.Conn){
 	for iterator.HasNext(){
 		message := iterator.Next()
 		fmt.Println(message)
-		ws.Write([]byte("<h1 id=\"ws\" hx-swap-oob=\"outerHTML\"> message </h1><br>"))
+		ws.Write([]byte("<div id=\"ws\" hx-swap-oob=\"beforeend\"><p> all-Message </p></div>"))
+
 	}
 }
 
+
+var counter int = 0
 
 func (cr * ChatRoom) readLoop( ws *websocket.Conn){
 	buf := make([]byte, 1024)
@@ -76,9 +79,14 @@ func (cr * ChatRoom) readLoop( ws *websocket.Conn){
 			fmt.Println("Read err:", err)
 			continue
 		}
+
+		if n > 0 {
+			counter += 1
+		}
 		msg := buf[:n]
 		fmt.Println("Message was: ", string(msg))
-		ws.Write([]byte("<h1 id=\"ws\" hx-swap-oob=\"outerHTML\"> Message received </h1><br>"))
+		message := fmt.Sprintf("<div id=\"ws\" hx-swap-oob=\"beforeend\"><p> read loop %d</p></div>", counter)
+		ws.Write([]byte(message))
 	}
 
 }

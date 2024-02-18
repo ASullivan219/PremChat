@@ -19,6 +19,7 @@ func home(w http.ResponseWriter, r *http.Request){
 
 
 func main (){
+	fmt.Println("Starting server, listening on port 8000")
 	ChatRooom.ReceiveMessage(messagequeue.Message{RawText: "M1"})
 	ChatRooom.ReceiveMessage(messagequeue.Message{RawText: "M2"})
 	http.HandleFunc("/", home)
