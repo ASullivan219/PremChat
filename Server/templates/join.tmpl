@@ -1,0 +1,15 @@
+<div>
+	<div hx-ext="ws" ws-connect="/ws">
+	  <div id="ws"></div>
+	  <form ws-send=""  hx-trigger="load delay:1ms" hidden="true">
+		<input type="text" name="username" value="{{.}}">
+	  </form>
+	</div>
+
+	<form id="messageBox" hx-post="/message" hx-swap="none">
+		<input type="text" name="message" required >
+		<input type="text" name="username" value="{{.}}" hidden="true">
+		<input type="submit">
+	</form>
+</div>
+

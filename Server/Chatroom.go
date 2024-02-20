@@ -2,7 +2,9 @@ package main
 
 import (
 	"MessageQueue"
+	"bytes"
 	"fmt"
+	"html/template"
 	"io"
 	"sync"
 
@@ -23,46 +25,41 @@ func NewChatroom(msgBufferSize int)ChatRoom{
 }
 
 func (cr *ChatRoom) ReceiveMessage(message messagequeue.Message) {
-	cr.messages.AddMessage(message)
-}
-
-func (cr *ChatRoom) broadcast() {
 	cr.mutex.Lock()
 	defer cr.mutex.Unlock()
-	fmt.Printf(" Broadcasting to all connections")
+	cr.messages.AddMessage(message)
+	cr.broadcast(message)
+}
+
+func (cr *ChatRoom) broadcast(message messagequeue.Message) {
+	fmt.Println(" Broadcasting message to all connections")
+	for connection := range cr.connections{
+		sendMessage(message, connection)
+	}
+
 }
 
 func (cr *ChatRoom) connect(conn *websocket.Conn) {
 	cr.mutex.Lock()
-	fmt.Println("New connection:")
-	fmt.Println(conn.Config().Origin)
-	fmt.Println(conn.Config().Location)
-	fmt.Println(conn.Config().Dialer)
-	sendMessage([]byte("<p> Connected!</p>"), conn)
 	cr.connections[conn] = true
-	fmt.Println(cr.connections)
 	cr.mutex.Unlock()
-	
 	cr.sendAllMessages(conn)
 	cr.readLoop(conn)
 }
 
 
-func (cr * ChatRoom) sendAllMessages(ws *websocket.Conn){
+func (cr * ChatRoom) sendAllMessages(connection *websocket.Conn){
 	cr.mutex.Lock()
 	defer cr.mutex.Unlock()
 
 	iterator := messagequeue.NewIterator(&cr.messages)
 	for iterator.HasNext(){
 		message := iterator.Next()
-		fmt.Println(message)
-		ws.Write([]byte("<div id=\"ws\" hx-swap-oob=\"beforeend\"><p> all-Message </p></div>"))
-
+		sendMessage(message, connection)
 	}
 }
 
 
-var counter int = 0
 
 func (cr * ChatRoom) readLoop( ws *websocket.Conn){
 	buf := make([]byte, 1024)
@@ -72,28 +69,35 @@ func (cr * ChatRoom) readLoop( ws *websocket.Conn){
 			if err == io.EOF{
 				fmt.Println("Connection closed")
 				cr.mutex.Lock()
-				defer cr.mutex.Unlock()
 				delete(cr.connections, ws)
+				cr.mutex.Unlock()
 				break
 			}
 			fmt.Println("Read err:", err)
 			continue
 		}
-
-		if n > 0 {
-			counter += 1
-		}
 		msg := buf[:n]
 		fmt.Println("Message was: ", string(msg))
-		message := fmt.Sprintf("<div id=\"ws\" hx-swap-oob=\"beforeend\"><p> read loop %d</p></div>", counter)
-		ws.Write([]byte(message))
 	}
 
 }
 
-func sendMessage(message []byte, conn *websocket.Conn){
-	_, err := conn.Write(message)
+func sendMessage(message messagequeue.Message, conn *websocket.Conn){
+	var response bytes.Buffer
+	tmpl, err := template.ParseFiles("./templates/message.tmpl")
 	if err != nil {
-		println("Couldnt send the message for some reason or another")
+		fmt.Println("Error parsing template")
+	}
+
+	err = tmpl.Execute(&response, message)
+	if err != nil {
+		fmt.Println("error executing message")
+	}
+
+	_, err = conn.Write(response.Bytes())
+
+
+	if err != nil {
+		println("Couldnt send the message")
 	}
 }

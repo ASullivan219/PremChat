@@ -2,20 +2,25 @@
 <html lang="en">
   <head>
     <script src="/static/htmx.min.js"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+    <script src="/static/ws.js"></script>
+    <link href="/static/output.css" rel="stylesheet">
     <meta charset="UTF-8" />
-    <title>Hello, world!</title>
+    <title> Chat App</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="" />
   </head>
-  <body>
-    <h1>Hello, world!</h1>
-    <div hx-ext="ws" ws-connect="/ws" hx-trigger="click">
-      Join
-      <div id="ws"></div>
-      <form id-"form" ws-send>
-        <input name='chatMessage'>
+  <body class="grid grid-cols-3 content-center">
+    <div></div>
+    <div id="centerDiv" class="mt-10">
+      <form class="shadow-lg bg-white p-4 space-y-5 rounded-lg" id="join" hx-post="/join" hx-target="#centerDiv">
+        <div>
+          <p class="font-bold text-cyan-700 mb-2">Username:</p>
+          <input class="w-full justify-content-center py-3 pl-2 border shadow-lg rounded-lg" type="test" name="username" value="">
+        </div>
+        <input class="w-full p-5 bg-cyan-900 text-white font-bold rounded-lg" type="submit" name="" value="Join Chat">
       </form>
     </div>
+    <div></div>
   </body>
 </html>
+
