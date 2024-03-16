@@ -31,6 +31,13 @@ func (cr *ChatRoom) ReceiveMessage(message messagequeue.Message) {
 	cr.mutex.Lock()
 	defer cr.mutex.Unlock()
 	cr.messages.AddMessage(message)
+	fmt.Println("Message Received: ", message)
+
+	if (cr.users[message.Username] == nil){
+		//TODO: redirect user thats sending a message even though theyve left the chat
+		// Maybe correlate this with their connection as well to make double sure
+		fmt.Println("UH oh this user shouldnt exist, redirect them to the join page")
+	}
 	cr.broadcast(message)
 }
 
@@ -43,11 +50,8 @@ func (cr *ChatRoom) broadcast(message messagequeue.Message) {
 }
 
 func (cr *ChatRoom) connect(conn *websocket.Conn) {
-	username := "undefined"
-	fmt.Println(conn.Request())
-	cr.adduser(conn, username)
 	cr.sendAllMessages(conn)
-	cr.readLoop(conn, username)
+	cr.readLoop(conn)
 }
 
 
@@ -67,7 +71,7 @@ type InitialMessage struct {
 }
 
 
-func (cr * ChatRoom) readLoop( ws *websocket.Conn, username string){
+func (cr * ChatRoom) readLoop(ws *websocket.Conn){
 	buf := make([]byte, 1024)
 	var initialMessage InitialMessage
 	for {
@@ -88,16 +92,11 @@ func (cr * ChatRoom) readLoop( ws *websocket.Conn, username string){
 		} else {
 			cr.adduser(ws, initialMessage.Username)
 		}
-
-		
-		
-		fmt.Println("Message was: ", string(msg))
 	}
 
 }
 
 func (cr *ChatRoom) checkUsernameValid(username string) bool{
-	fmt.Println(" User check :",cr.users[username])
 	return cr.users[username] == nil
 }
 
@@ -107,7 +106,6 @@ func (cr *ChatRoom) removeUser(ws *websocket.Conn, username string){
 	delete(cr.connections, ws)
 	fmt.Printf("removing user %s, from the chat room\n", username)
 	delete(cr.users, username)
-	fmt.Println("Users after removal:", cr.users)
 }
 
 func (cr *ChatRoom) adduser(ws *websocket.Conn, username string){
@@ -116,7 +114,6 @@ func (cr *ChatRoom) adduser(ws *websocket.Conn, username string){
 	fmt.Printf("adding user %s, to the chat room\n", username)
 	cr.connections[ws] = username
 	cr.users[username] = ws
-	fmt.Println("Users after adding:", cr.users)
 }
 
 
@@ -126,8 +123,6 @@ func sendMessage(message messagequeue.Message, conn *websocket.Conn){
 	if err != nil {
 		fmt.Println("Error parsing template")
 	}
-	fmt.Println(message)
-
 	err = tmpl.Execute(&response, message)
 	if err != nil {
 		fmt.Println("error executing message")

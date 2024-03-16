@@ -1,7 +1,6 @@
 package messagequeue
 
 import (
-	"fmt"
 	"strings"
 	"time"
 )
@@ -59,12 +58,10 @@ func NewIterator(messageQueue *MessageQueue) MessageQueueIterator{
 }
 
 func (i* MessageQueueIterator) HasNext() bool {
-	fmt.Printf("current: %d, last: %d\n", i.currentIndex % i.size, i.Queue.Last)
 	return i.elementsLeft > 0
 }
 
 func (i *MessageQueueIterator) Next() Message{
-	fmt.Printf("grabbing element %d\n", i.currentIndex % i.size)
 	current := i.Queue.Messages[i.currentIndex % i.size]
 	i.currentIndex += 1
 	i.elementsLeft -= 1
