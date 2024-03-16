@@ -1,15 +1,48 @@
-<div>
-	<div hx-ext="ws" ws-connect="/ws">
-	  <div id="ws"></div>
-	  <form ws-send=""  hx-trigger="load delay:1ms" hidden="true">
-		<input type="text" name="username" value="{{.}}">
-	  </form>
-	</div>
+<div class="grid grid-cols-5" swap="outerHTML">
+  <div class="bg-slate-50"></div>
+  <div class="col-span-3 h-screen">
+    <div id="received-mesesages" class="flex h-3/4 flex-col-reverse overflow-auto">
+      <div id="messages">
+        <div id="message" class="m-1 w-3/4 rounded-lg border-l-4 border-violet-900 bg-gradient-to-r from-violet-100 p-1">
+          <div class="m-4">
+            <div class="flex justify-between">
+              <p class="font-bold text-slate-700">Alex Sullivan</p>
+              <div class="text-slate-400">2 / 24 / 24 21:03</div>
+            </div>
+            <p class="pt-4">Hello my name is alex. Hello my name is alex hello my name is alex. hello my name is alex hello my name is alex.</p>
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <div id="message" class="m-1 w-3/4 rounded-lg border-r-4 border-violet-800 bg-gradient-to-l from-violet-100 p-1">
+            <div class="m-4">
+              <div class="flex justify-between">
+                <p class="font-bold">Alex Sullivan</p>
+                <div class="text-slate-400">2 / 24 / 24 21:05</div>
+              </div>
+              <p class="pt-4">Hello my name is alex. Hello my name is alex hello my name is alex. hello my name is alex hello my name is alex.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div hx-ext="ws" ws-connect="/ws" hidden="true">
+      <div id="ws"></div>
+      <form ws-send="" hx-trigger="load delay:1ms" hidden="true">
+        <input type="text" name="username" value="{{.}}" />
+      </form>
+    </div>
 
-	<form id="messageBox" hx-post="/message" hx-swap="none">
-		<input type="text" name="message" required >
-		<input type="text" name="username" value="{{.}}" hidden="true">
-		<input type="submit">
-	</form>
+    <form action="" class="h-1/4 bg-slate-50" hx-post="/message" hx-swap="none">
+      <div class="size-full p-5">
+        <div class="size-full rounded-lg">
+          <textarea name="rawText" class="size-9/12 max-h-full w-full resize-none rounded-t-lg bg-white p-3 caret-violet-500 accent-violet-500"></textarea>
+          <div class="flex justify-end rounded-b-lg bg-white p-2">
+            <button class="rounded-lg bg-violet-400 px-3 py-2 text-white hover:bg-violet-500" type="submit">send</button>
+          </div>
+          <input type="text" name="username" value="{{.}}" hidden="true">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="bg-slate-50"></div>
 </div>
-

@@ -1,5 +1,11 @@
-<div id="ws" hx-swap-oob="beforeend">
-	<p> User: {{.Username}}</p>
-	<p> {{.RawText}} </p>
-	<p> {{.Time}} </p>
+<div id="messages" hx-swap-oob="beforeend">
+  <div class="m-1 w-3/4 rounded-lg border-l-4 border-violet-900 bg-gradient-to-r from-violet-100 p-1">
+    <div class="m-4">
+	  <div class="flex justify-between">
+	    <p class="font-bold text-slate-700">{{.Username}}</p>
+	    <div class="text-slate-400">2 / 24 / 24 21:03</div>
+	  </div>
+	  <p class="pt-4">{{.RawText}}</p>
+    </div>
+  </div>
 </div>
