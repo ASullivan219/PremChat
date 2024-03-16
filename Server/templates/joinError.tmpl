@@ -1,5 +1,16 @@
-<div id="join-error" hx-swap-oob="outerHTML:#join-error"> 
-  <div>
-    Server error {{.}}
+ <div id="content"class="grid grid-cols-3 content-center">
+  <div></div>
+  <div id="centerDiv" class="mt-10">
+
+    <form class="shadow-lg bg-white p-4 space-y-5 rounded-lg" id="join" hx-post="/join" hx-target="#content" hx-swap="outerHTML">
+      <div id="join-error" hx-select-oob="true">{{.}}</div>
+      <div>
+        <p class="font-bold text-cyan-700 mb-2">Username:</p>
+        <input class="w-full justify-content-center py-3 pl-2 border shadow-lg rounded-lg" type="test" name="username" value="">
+      </div>
+      <input class="w-full p-5 bg-cyan-900 text-white font-bold rounded-lg" type="submit" name="" value="Join Chat">
+    </form>
+
   </div>
+  <div></div>
 </div>
