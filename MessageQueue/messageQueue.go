@@ -1,6 +1,9 @@
 package messagequeue
 
-import "fmt"
+import (
+	"strings"
+	"time"
+)
 
 type Iterator interface{
 	Next()
@@ -21,9 +24,15 @@ type MessageQueueIterator struct{
 }
 
 type Message struct{
-	RawText string
+	RawText		[]string
+	Username	string
+	Time		time.Time
 }
 
+func NewMessage( rawText string, username string) Message{
+	currentTime := time.Now()
+	return Message{ RawText: strings.Split(rawText, "\n"), Username: username, Time: currentTime} 
+}
 
 type MessageQueue struct{
 	Queue
@@ -49,12 +58,10 @@ func NewIterator(messageQueue *MessageQueue) MessageQueueIterator{
 }
 
 func (i* MessageQueueIterator) HasNext() bool {
-	fmt.Printf("current: %d, last: %d\n", i.currentIndex % i.size, i.Queue.Last)
 	return i.elementsLeft > 0
 }
 
 func (i *MessageQueueIterator) Next() Message{
-	fmt.Printf("grabbing element %d\n", i.currentIndex % i.size)
 	current := i.Queue.Messages[i.currentIndex % i.size]
 	i.currentIndex += 1
 	i.elementsLeft -= 1
