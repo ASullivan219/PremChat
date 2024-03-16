@@ -2,6 +2,7 @@ package messagequeue
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -24,14 +25,14 @@ type MessageQueueIterator struct{
 }
 
 type Message struct{
-	RawText		string
+	RawText		[]string
 	Username	string
 	Time		time.Time
 }
 
 func NewMessage( rawText string, username string) Message{
 	currentTime := time.Now()
-	return Message{ RawText: rawText, Username: username, Time: currentTime} 
+	return Message{ RawText: strings.Split(rawText, "\n"), Username: username, Time: currentTime} 
 }
 
 type MessageQueue struct{
